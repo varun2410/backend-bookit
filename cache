@@ -1,0 +1,4 @@
+bin/console cache:clear
+chmod -R 777 var/cache/ var/logs/
+bin/console cache:clear --env=prod
+chmod -R 777 var/cache/ var/logs/

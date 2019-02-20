@@ -1,0 +1,5 @@
+movie_list:
+    resource: "@MovieListBundle/Controller/"
+    type:     annotation
+    prefix:   /
+

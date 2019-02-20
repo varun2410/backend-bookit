@@ -1,0 +1,4 @@
+services:
+    movie_list.utils_service:
+        class: MovieListBundle\Service\Utils
+        public: true
