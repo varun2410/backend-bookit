@@ -27,7 +27,7 @@ class DefaultController extends Controller
      *
      * @param Request $request
      */
-    public function getMovieList(Request $request)
+    public function getAdminMovieList(Request $request)
     {
         $encoders = [new XmlEncoder(), new JsonEncoder()];
         $normalizers = [new ObjectNormalizer()];
@@ -43,7 +43,7 @@ class DefaultController extends Controller
             $movie->setExpirydate($movie->getExpirydate()->format('Y-m-d'));
         }
 
-        print_r($serializer->serialize($movies, 'json'));die;
+        return new Response($serializer->serialize($movies, 'json'));
     }
 
     /**
@@ -74,6 +74,35 @@ class DefaultController extends Controller
         $em->flush();
 
         return new Response('Movie Added Successfully');
+    }
 
+
+
+    /**
+     * @Route("/movies", methods={"GET"}, name="getAllMovies")
+     *
+     * @param Request $request
+     */
+    public function getMovieList(Request $request)
+    {
+        $encoders = [new XmlEncoder(), new JsonEncoder()];
+        $normalizers = [new ObjectNormalizer()];
+
+        $serializer = new Serializer($normalizers, $encoders);
+
+        $currentDate = new \DateTime();
+
+        $currentDate = $currentDate->format('Y-m-d');
+
+        $movies = $this->getDoctrine()
+            ->getRepository('MovieListBundle:Movies')
+            ->findByExpiryDate($currentDate);
+
+        foreach ($movies as $movie)
+        {
+            $movie->setExpirydate($movie->getExpirydate()->format('Y-m-d'));
+        }
+
+        return new Response($serializer->serialize($movies, 'json'));
     }
 }
