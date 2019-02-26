@@ -10,12 +10,44 @@ namespace MovieListBundle\Repository;
  */
 class MoviesRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * @param $expirydate
+     * @return array
+     */
     public function findByExpiryDate($expirydate)
     {
         $qb = $this->createQueryBuilder('m')
             ->where('m.expirydate > :expirydate')
             ->setParameter('expirydate', $expirydate)
             ->getQuery();
+
+        return $qb->getResult();
+    }
+
+    /**
+     * @param $searchKey
+     * @param $currentDate
+     * @return array
+     */
+    public function findBySearchKey($searchKey, $currentDate)
+    {
+        $params = [
+          'expirydate' => $currentDate
+        ];
+
+        $qb = $this->createQueryBuilder('m')
+            ->where('m.expirydate > :expirydate');
+
+        if ('null' !== $searchKey) {
+            $queryParam = '%'.$searchKey.'%';
+            $qb = $qb->andWhere('m.name LIKE :searchKey');
+            $params['searchKey'] = $queryParam;
+        }
+
+        $qb = $qb->setParameters($params)
+            ->getQuery();
+
+
 
         return $qb->getResult();
     }

@@ -76,8 +76,6 @@ class DefaultController extends Controller
         return new Response('Movie Added Successfully');
     }
 
-
-
     /**
      * @Route("/movies", methods={"GET"}, name="getAllMovies")
      *
@@ -104,5 +102,63 @@ class DefaultController extends Controller
         }
 
         return new Response($serializer->serialize($movies, 'json'));
+    }
+
+    /**
+     * @Route("/testimonial", methods={"GET"}, name="getTestimonial")
+     *
+     * @param Request $request
+     */
+    public function getTestimonial(Request $request)
+    {
+        $testimonial = [
+            1 => [
+                'id' => 1,
+                'img' => 'http://api.bookit.in/uploads/varun.jpg',
+                'name' => 'Varun',
+                'review' => 'Its Awesome As Hell'
+            ],
+            2 => [
+                'id' => 2,
+                'img' => 'http://api.bookit.in/uploads/watan.jpg',
+                'review' => 'We thought of a world changing app and made it a reality'
+            ],
+            3 => [
+                'id' => 3,
+                'img' => 'http://api.bookit.in/uploads/sriyank.jpg',
+                'review' => 'Its is the latest tech in world'
+            ]
+        ];
+
+        return new Response(json_encode($testimonial));
+    }
+
+    /**
+     * @Route("/search/{searchKey}", methods={"GET"}, name="getTestimonial")
+     *
+     * @param $searchKey
+     */
+    public function searchMovie($searchKey)
+    {
+        $encoders = [new XmlEncoder(), new JsonEncoder()];
+        $normalizers = [new ObjectNormalizer()];
+
+        $serializer = new Serializer($normalizers, $encoders);
+
+        $currentDate = new \DateTime();
+
+        $currentDate = $currentDate->format('Y-m-d');
+
+        $movies = $this->getDoctrine()
+            ->getRepository('MovieListBundle:Movies')
+            ->findBySearchKey($searchKey, $currentDate);
+
+        foreach ($movies as $movie)
+        {
+            $movie->setExpirydate($movie->getExpirydate()->format('Y-m-d'));
+        }
+
+        return new Response($serializer->serialize($movies, 'json'));
+
     }
 }
